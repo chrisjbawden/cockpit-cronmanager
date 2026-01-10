@@ -1,0 +1,122 @@
+/* Modern minimal styling — responsive and accessible */
+:root{
+  --bg:#f6f8fa;
+  --panel:#ffffff;
+  --muted:#6b7280;
+  --accent:#2563eb;
+  --danger:#dc2626;
+  --glass: rgba(0,0,0,0.04);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color-scheme: light;
+}
+
+*{box-sizing:border-box}
+html,body,#app{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:#111827;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.4;
+}
+
+.app {
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  gap:16px;
+  padding:20px;
+}
+
+.app-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.header-actions{display:flex;align-items:center;gap:8px}
+
+.brand{display:flex;align-items:center;gap:12px}
+h1{font-size:1.15rem;margin:0}
+
+.main{
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:16px;
+  align-items:start;
+}
+
+.panel{
+  background:var(--panel);
+  border-radius:10px;
+  box-shadow:0 1px 0 rgba(16,24,40,0.04);
+  padding:16px;
+}
+.crontab-panel{grid-column:1 / -1}
+
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.panel-actions{display:flex;gap:8px}
+.panel-actions-bottom{margin-top:12px;justify-content:flex-end}
+.header-actions select{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:#fff}
+
+.btn{
+  border:0;padding:8px 12px;border-radius:8px;cursor:pointer;background:var(--glass);
+}
+.btn:hover{filter:brightness(.98)}
+.btn-icon{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-size:1rem}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:#edf2ff}
+.btn-ghost{background:transparent}
+.btn-danger{background:var(--danger);color:#fff}
+
+.sr-only{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0, 0, 0, 0);
+  border:0;
+}
+
+.hidden{display:none}
+
+.crontab-list{height:360px;max-height:70vh;overflow:auto;resize:vertical;padding:6px;border-radius:8px;border:1px solid rgba(0,0,0,0.04);background:#fafafa}
+.cron-line{display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;margin:6px 0;background:white;box-shadow:0 0 0 1px rgba(0,0,0,0.02) inset}
+.cron-meta{font-family:monospace;font-size:0.9rem;color:#0f172a}
+.cron-actions{margin-left:auto;display:flex;gap:8px}
+.cron-comment{color:var(--muted);font-style:italic;padding-left:6px}
+
+.add-form{display:flex;flex-direction:column;gap:8px}
+.add-form input{padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);font-size:0.95rem}
+.form-row{display:flex;gap:8px}
+
+.log-panel{grid-column:1 / -1}
+.log-area{min-height:160px;max-height:400px;overflow:auto;background:#0b1220;color:#e6eef8;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem}
+.log-panel.collapsed .log-area{display:none}
+.log-panel .panel-head{justify-content:center}
+.log-panel #log-heading{font-size:0.95rem}
+.log-panel.collapsed #log-heading{display:none}
+.log-panel .btn-icon{font-size:1.1rem;line-height:1}
+
+.hint{color:var(--muted);font-size:0.9rem;margin-top:8px}
+.app-footer{text-align:center;color:var(--muted)}
+.app-footer a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(0,0,0,0.2)}
+.app-footer a:hover{border-bottom-color:rgba(0,0,0,0.45)}
+
+/* Modal */
+.modal{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.45);z-index:40;
+}
+.modal-card{background:white;padding:18px;border-radius:10px;width:min(560px,92%);box-shadow:0 10px 30px rgba(2,6,23,0.3)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.modal-editor{width:min(900px,95%);display:flex;flex-direction:column;gap:8px}
+.editor-area{min-height:320px;resize:vertical;padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);font-family:monospace;font-size:0.9rem;background:#fafafa;color:#0f172a}
+
+/* Small screens */
+@media (max-width:900px){
+  .main{grid-template-columns:1fr; }
+}

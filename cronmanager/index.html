@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cockpit — Crontab Manager</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Cockpit's JS is available inside Cockpit environment -->
+  <script src="../base1/cockpit.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="app-header">
+      <div class="brand">
+        <h1>Cockpit Cron Manager</h1>
+      </div>
+      <div class="header-actions">
+        <label class="sr-only" for="userSelect">User</label>
+        <select id="userSelect" aria-label="Select user"></select>
+        <button id="refreshBtn" class="btn btn-icon" aria-label="Refresh crontab">↻</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section id="error-container" class="panel hidden" role="alert" aria-live="assertive"></section>
+
+      <section class="panel crontab-panel" aria-label="Crontab entries">
+        <div id="crontab-list" class="crontab-list" aria-live="polite">
+          <!-- Filled by JS -->
+          <div class="empty">Loading crontab…</div>
+        </div>
+        <div class="panel-actions panel-actions-bottom">
+          <button id="openEditorBtn" class="btn btn-secondary">Open editor</button>
+          <button id="openAddBtn" class="btn btn-primary" aria-label="Add cron job">+</button>
+        </div>
+      </section>
+
+      <section class="panel log-panel collapsed" aria-labelledby="log-heading">
+        <div class="panel-head">
+          <h2 id="log-heading">Activity</h2>
+          <button id="logToggle" class="btn btn-ghost btn-icon" aria-expanded="false" aria-controls="logArea">⌄</button>
+        </div>
+        <pre id="logArea" class="log-area" aria-live="polite"></pre>
+      </section>
+    </main>
+
+    <!-- Confirmation modal -->
+    <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+      <div class="modal-card">
+        <h3 id="confirmTitle">Confirm delete</h3>
+        <p id="confirmText">Are you sure you want to remove this cron entry?</p>
+        <div class="modal-actions">
+          <button id="confirmYes" class="btn btn-danger">Delete</button>
+          <button id="confirmNo" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editor modal -->
+    <div id="editorModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="editorTitle" hidden>
+      <div class="modal-card modal-editor">
+        <div class="modal-head">
+          <h3 id="editorTitle">Edit crontab</h3>
+          <button id="editorClose" class="btn btn-ghost" aria-label="Close editor">✕</button>
+        </div>
+        <textarea id="editorArea" class="editor-area" spellcheck="false"></textarea>
+        <div class="modal-actions">
+          <button id="editorSave" class="btn btn-primary">Save</button>
+          <button id="editorCancel" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add modal -->
+    <div id="addModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="addTitle" hidden>
+      <div class="modal-card modal-editor">
+        <div class="modal-head">
+          <h3 id="addTitle">Add a new cron job</h3>
+          <button id="addClose" class="btn btn-ghost" aria-label="Close add form">✕</button>
+        </div>
+        <form id="addForm" class="add-form">
+          <label for="cronExpr">Schedule (cron expression)</label>
+          <input id="cronExpr" name="cronExpr" placeholder="*/15 * * * *" required>
+          <label for="cronCmd">Command</label>
+          <input id="cronCmd" name="cronCmd" placeholder="/usr/local/bin/backup.sh" required>
+          <div class="form-row">
+            <button type="submit" class="btn btn-primary">Add job</button>
+            <button type="button" id="exampleBtn" class="btn btn-ghost">Example</button>
+            <button type="button" id="addCancel" class="btn btn-secondary">Cancel</button>
+          </div>
+        </form>
+        <p class="hint">Tip: Use full paths in the command. This app installs the job into the selected user's crontab.</p>
+      </div>
+    </div>
+
+    <footer class="app-footer">
+      <small>Cockpit Cron Manager · <a href="#" class="version-link">v0.1.0</a></small>
+    </footer>
+  </div>
+</body>
+</html>
