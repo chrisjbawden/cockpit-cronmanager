@@ -24,9 +24,7 @@
   const addForm = document.getElementById('addForm');
   const cronExpr = document.getElementById('cronExpr');
   const cronCmd = document.getElementById('cronCmd');
-  const logArea = document.getElementById('logArea');
-  const logToggle = document.getElementById('logToggle');
-  const logPanel = document.querySelector('.log-panel');
+  const logArea = null;
   const confirmModal = document.getElementById('confirmModal');
   const confirmYes = document.getElementById('confirmYes');
   const confirmNo = document.getElementById('confirmNo');
@@ -48,11 +46,17 @@
   let parsedLines = []; // {type: 'entry'|'comment'|'blank', text, lineIdx}
   let toDeleteIndex = null;
   let currentUser = null;
+  let adminPermission = null;
+  let limitedAccess = false;
 
   // Helpers
   function log(msg){
     const now = new Date().toISOString().replace('T',' ').slice(0,19);
-    logArea.textContent = `${now} - ${msg}\n` + logArea.textContent;
+    if (logArea) {
+      logArea.textContent = `${now} - ${msg}\n` + logArea.textContent;
+    } else {
+      console.info(`${now} - ${msg}`);
+    }
   }
 
   function setError(msg){
@@ -134,6 +138,44 @@
         userSelect.dispatchEvent(new Event('change'));
       }
     }
+  }
+
+  function ensureCurrentUserOption(){
+    if (!userSelect) return;
+    userSelect.innerHTML = '';
+    if (currentUser){
+      const opt = document.createElement('option');
+      opt.value = currentUser;
+      opt.textContent = currentUser;
+      userSelect.appendChild(opt);
+      userSelect.value = currentUser;
+    }
+  }
+
+  function updateUserSelectVisibility(){
+    if (!userSelect) return;
+    if (limitedAccess){
+      userSelect.classList.add('hidden');
+      userSelect.setAttribute('aria-hidden', 'true');
+      ensureCurrentUserOption();
+    } else {
+      userSelect.classList.remove('hidden');
+      userSelect.removeAttribute('aria-hidden');
+    }
+  }
+
+  function initAccessMode(){
+    if (!cockpit || typeof cockpit.permission !== 'function') return;
+    adminPermission = cockpit.permission({ admin: true });
+    limitedAccess = !adminPermission.allowed;
+    updateUserSelectVisibility();
+    adminPermission.addEventListener('changed', () => {
+      limitedAccess = !adminPermission.allowed;
+      updateUserSelectVisibility();
+      if (!limitedAccess){
+        loadUsers();
+      }
+    });
   }
 
   // Basic cron expression validator (very permissive)
@@ -482,14 +524,6 @@
     cronCmd.value = "/usr/local/bin/backup.sh";
   });
 
-  if (logToggle && logPanel){
-    logToggle.addEventListener('click', () => {
-      const collapsed = logPanel.classList.toggle('collapsed');
-      logToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-      logToggle.textContent = collapsed ? '⌄' : '⌃';
-    });
-  }
-
   // Initial load sequence
   async function init(){
     try {
@@ -499,8 +533,13 @@
       wireEditorButtons();
       wireAddButtons();
       await fetchCurrentUser();
+      initAccessMode();
       await checkCronAvailable();
-      await loadUsers();
+      if (!limitedAccess) {
+        await loadUsers();
+      } else {
+        ensureCurrentUserOption();
+      }
       await loadCrontab();
     } catch (err){
       // If check failed fatally, we've already shown error
